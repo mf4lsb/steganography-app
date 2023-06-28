@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "829986748537",
+    "project_id": "stego-9806b",
+    "storage_bucket": "stego-9806b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:829986748537:android:ec1b18f1877783cb39bca8",
+        "android_client_info": {
+          "package_name": "com.example.steganography_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "829986748537-q7uqva44og983451la27c9mv31dbllsd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4cPIfLyqY7wSLVZvJxpOesqSIx1060ac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "829986748537-q7uqva44og983451la27c9mv31dbllsd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
