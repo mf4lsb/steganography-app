@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../constants/custom_colors.dart';
 
@@ -8,13 +7,12 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
   final TextEditingController controller;
 
-  const CustomTextField({
-    super.key,
-    this.hintText,
-    this.suffixIcon,
-    this.obscureText = false,
-    required this.controller
-  });
+  const CustomTextField(
+      {super.key,
+      this.hintText,
+      this.suffixIcon,
+      this.obscureText = false,
+      required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +34,23 @@ class CustomTextField extends StatelessWidget {
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: CustomColors.primaryPurple),
-          borderRadius: BorderRadius.circular(45), 
+          borderRadius: BorderRadius.circular(45),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(45),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: Colors.red),
+          borderRadius: BorderRadius.circular(45),
         ),
       ),
-        // ignore: body_might_complete_normally_nullable
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'This Field cannot be empyt';
-          };
-        },
+      // ignore: body_might_complete_normally_nullable
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'This Field cannot be empyt';
+        }
+      },
     );
   }
 }

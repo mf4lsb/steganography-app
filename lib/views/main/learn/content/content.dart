@@ -35,6 +35,7 @@ class LearnContent extends StatelessWidget {
                     children: [
                       const SizedBox(height: 16),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Align(
                             alignment: Alignment.topLeft,
@@ -45,21 +46,25 @@ class LearnContent extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Text(
-                            title,
-                            style: AppTypography.headline.copyWith(
-                              fontSize: 25,
-                              color: CustomColors.primaryPurple,
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: AppTypography.headline.copyWith(
+                                fontSize: 25,
+                                color: CustomColors.primaryPurple,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 36),
                       Container(
-                        width: 200,
                         height: 200,
                         decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xff5B5B5B))),
+                            border: Border.all(
+                          color: const Color(0xff5B5B5B),
+                        )),
+                        child: Image.asset(image, fit: BoxFit.fill),
                       ),
                       const SizedBox(height: 38),
                       Expanded(
@@ -73,7 +78,8 @@ class LearnContent extends StatelessWidget {
                           padding: const EdgeInsets.all(16),
                           child: Text(
                             content,
-                            style: AppTypography.regular12.copyWith(fontSize: 18),
+                            style:
+                                AppTypography.regular12.copyWith(fontSize: 18),
                           ),
                         ),
                       ),

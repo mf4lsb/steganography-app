@@ -1,11 +1,15 @@
+import 'dart:developer' as dev;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:steganography_app/constants/typo.dart';
-import 'package:steganography_app/data/auth_service.dart';
+import 'package:steganography_app/data/firebase_database_service.dart';
 import 'package:steganography_app/views/forget_password/forget_password_view.dart';
 import 'package:steganography_app/views/registration/registration_view.dart';
 import 'package:steganography_app/views/shared/custom_button.dart';
 import 'package:steganography_app/views/shared/custom_text_field.dart';
+
+import '../../data/auth_service.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -21,47 +25,111 @@ class _LoginViewState extends State<LoginView> {
   // ignore: unused_field
   final _key = GlobalKey<FormState>();
 
-   @override
+  @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
   }
-   @override
+
+  @override
   void dispose() {
     _passwordController.dispose();
     _emailController.dispose();
     super.dispose();
   }
 
-  void _navigateToRegistrationView() => Navigator.push(     //Perintah jika menekan tombol registrasi
+  void _navigateToRegistrationView() => Navigator.push(
+        //Perintah jika menekan tombol registrasi
         context,
         MaterialPageRoute(
           builder: (context) => const RegistrationView(),
         ),
       );
 
-  void _navigateToForgetPasswordView() => Navigator.push(  //Perintah jika menekan tombol forget password
+  void _navigateToForgetPasswordView() => Navigator.push(
+        //Perintah jika menekan tombol forget password
         context,
         MaterialPageRoute(
           builder: (context) => const ForgetPasswordView(),
         ),
       );
 
+  void loginAction() async {
+    FocusScope.of(context).unfocus();
+    if (_key.currentState!.validate()) {
+      try {
+        // ignore: unused_local_variable
+        final result = await AuthService.login(
+            _emailController.text, _passwordController.text);
+
+        if (result != null) {
+          dev.log(result.uid, name: 'UID');
+
+          // final userExist = await FirebaseDatabaseService.getdata(
+          //   'users/${AuthService.currentUser!.uid}',
+          // );
+
+          final String timelapse =
+              (DateTime.now().millisecondsSinceEpoch / 1000).floor().toString();
+
+          // if (userExist == null) {
+          final postData = {
+            'email': _emailController.text,
+            'full_name': '',
+            'last_login': timelapse,
+          };
+          FirebaseDatabaseService.updateData(
+            'users/${AuthService.currentUser!.uid}',
+            postData,
+          );
+          // } else {
+          //   dev.log((userExist as Map<String, dynamic>)['last_login']);
+          //   // final postData = {
+          //   //   'email': _emailController.text,
+          //   //   'full_name': userExist?.username,
+          //   //   'last_login': timelapse,
+          //   // };
+          //   // FirebaseDatabaseService.updateData(
+          //   //   'users/${AuthService.currentUser!.uid}',
+          //   //   postData,
+          //   // );
+          // }
+        }
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          e.message ?? 'Error',
+          style: AppTypography.regular12.copyWith(color: Colors.white),
+        )));
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          'Register failed, please try again',
+          style: AppTypography.regular12.copyWith(color: Colors.white),
+        )));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(builder: (context, constraints) {   //Perintah untuk membuat layout menjadi responsif berdasarkan batasan yang dibuat
-        return GestureDetector(                                //perintah untuk memberikan respon interaksi ketika menekan widget
+      body: LayoutBuilder(builder: (context, constraints) {
+        //Perintah untuk membuat layout menjadi responsif berdasarkan batasan yang dibuat
+        return GestureDetector(
+          //perintah untuk memberikan respon interaksi ketika menekan widget
           onTap: () => FocusScope.of(context).unfocus(),
-          child: SingleChildScrollView(                       //Perintah agar tampilan bisa di scroll
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,  
+          child: SingleChildScrollView(
+            //Perintah agar tampilan bisa di scroll
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minWidth: constraints.maxWidth,
                 minHeight: constraints.maxHeight,
               ),
-              child: IntrinsicHeight(   //Perintah setiap widget memiliki tinggi yang sama
+              child: IntrinsicHeight(
+                //Perintah setiap widget memiliki tinggi yang sama
                 child: Column(
                   children: [
                     const Spacer(),
@@ -72,65 +140,49 @@ class _LoginViewState extends State<LoginView> {
                           children: [
                             Text(
                               'Login',
-                              style: AppTypography.medium.copyWith(fontSize: 40),
+                              style:
+                                  AppTypography.medium.copyWith(fontSize: 40),
                             ),
                             const SizedBox(height: 24),
                             Form(
-                              key: _key,
-                              child:
-                                  Column(
-                                    children: [
-                            CustomTextField(controller: _emailController, 
-                            hintText: 'Enter Email'),
-                            const SizedBox(height: 20),
-                            CustomTextField(controller: _passwordController,
-                              hintText: 'Enter password',
-                              obscureText: isPasswordHide,
-                              suffixIcon: InkWell(                    //perintah agar memberikan efek visual ketika menekan widget
-                                onTap: () {
-                                  setState(() {
-                                    isPasswordHide = !isPasswordHide;
-                                  });
-                                },
-                                child: Icon(isPasswordHide
-                                    ? Icons.visibility
-                                    : Icons.visibility_off),
-                              ),
-                            ),
-                            const SizedBox(height: 37),
-                            CustomButton(
-                              textButton: 'Login',
-                              onPressed: () async {
-                                if (_key.currentState!.validate()) {
-                                  try {
-                          // ignore: unused_local_variable
-                          final result = await 
-                          AuthService.login(_emailController.text,_passwordController.text);
-                        } on FirebaseAuthException catch(e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
-                          Text(e.message ?? 'Error', 
-                          style: AppTypography.regular12.copyWith(color: Colors.white),)));
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: 
-                          Text('Register failed, please try again', 
-                          style: AppTypography.regular12.copyWith(color: Colors.white),)));
-                        }
-
-                                }
-                              }  
-                            ),
-
-                                    ],
-                                  ) 
-                            ),
-                            
+                                key: _key,
+                                child: Column(
+                                  children: [
+                                    CustomTextField(
+                                        controller: _emailController,
+                                        hintText: 'Enter Email'),
+                                    const SizedBox(height: 20),
+                                    CustomTextField(
+                                      controller: _passwordController,
+                                      hintText: 'Enter password',
+                                      obscureText: isPasswordHide,
+                                      suffixIcon: InkWell(
+                                        //perintah agar memberikan efek visual ketika menekan widget
+                                        onTap: () {
+                                          setState(() {
+                                            isPasswordHide = !isPasswordHide;
+                                          });
+                                        },
+                                        child: Icon(isPasswordHide
+                                            ? Icons.visibility
+                                            : Icons.visibility_off),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 37),
+                                    CustomButton(
+                                      textButton: 'Login',
+                                      onPressed: loginAction,
+                                    ),
+                                  ],
+                                )),
                             const SizedBox(height: 18),
                             InkWell(
                               onTap: () => _navigateToForgetPasswordView(),
                               child: Text(
                                 'Forgot Password',
                                 style: AppTypography.regular12.copyWith(
-                                    fontSize: 14, color: Color(0xff060606)),
+                                    fontSize: 14,
+                                    color: const Color(0xff060606)),
                               ),
                             ),
                           ]),
@@ -154,8 +206,8 @@ class _LoginViewState extends State<LoginView> {
     return Row(
       children: [
         Expanded(child: Container(height: 3, color: Colors.black)),
-         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             'or',
             style: AppTypography.regular12.copyWith(fontSize: 14),
@@ -174,14 +226,15 @@ class _LoginViewState extends State<LoginView> {
           'Don’t have an account?  ',
           style: AppTypography.regular12.copyWith(
             fontSize: 14,
-            color: Color(0xff0D0C0C),
+            color: const Color(0xff0D0C0C),
           ),
         ),
         InkWell(
           onTap: () => _navigateToRegistrationView(),
           child: Text(
             'Sign up',
-            style: AppTypography.regular12.copyWith(color: Colors.black, fontSize: 14),
+            style: AppTypography.regular12
+                .copyWith(color: Colors.black, fontSize: 14),
           ),
         )
       ],

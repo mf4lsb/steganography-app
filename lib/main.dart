@@ -23,7 +23,7 @@ class MainApp extends StatelessWidget {
         scaffoldBackgroundColor: CustomColors.background,
       
       ),
-      home: Wrapper(), 
+      home: const Wrapper(), 
     );
   }
 }
