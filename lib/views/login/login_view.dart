@@ -66,35 +66,34 @@ class _LoginViewState extends State<LoginView> {
         if (result != null) {
           dev.log(result.uid, name: 'UID');
 
-          // final userExist = await FirebaseDatabaseService.getdata(
-          //   'users/${AuthService.currentUser!.uid}',
-          // );
+          final userExist = await FirebaseDatabaseService.getdata(
+            'users/${AuthService.currentUser!.uid}',
+          );
 
           final String timelapse =
               (DateTime.now().millisecondsSinceEpoch / 1000).floor().toString();
 
-          // if (userExist == null) {
-          final postData = {
-            'email': _emailController.text,
-            'full_name': '',
-            'last_login': timelapse,
-          };
-          FirebaseDatabaseService.updateData(
-            'users/${AuthService.currentUser!.uid}',
-            postData,
-          );
-          // } else {
-          //   dev.log((userExist as Map<String, dynamic>)['last_login']);
-          //   // final postData = {
-          //   //   'email': _emailController.text,
-          //   //   'full_name': userExist?.username,
-          //   //   'last_login': timelapse,
-          //   // };
-          //   // FirebaseDatabaseService.updateData(
-          //   //   'users/${AuthService.currentUser!.uid}',
-          //   //   postData,
-          //   // );
-          // }
+          if (userExist == null) {
+            final postData = {
+              'email': _emailController.text,
+              'full_name': '',
+              'last_login': timelapse,
+            };
+            FirebaseDatabaseService.updateData(
+              'users/${AuthService.currentUser!.uid}',
+              postData,
+            );
+          } else {
+            final postData = {
+              'email': _emailController.text,
+              'full_name': (userExist as Map)['full_name'],
+              'last_login': timelapse,
+            };
+            FirebaseDatabaseService.updateData(
+              'users/${AuthService.currentUser!.uid}',
+              postData,
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
