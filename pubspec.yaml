@@ -25,6 +25,8 @@ dependencies:
   firebase_database: ^10.2.3
   uuid: ^3.0.7
   google_sign_in: ^6.1.4
+  share_plus: ^7.0.2
+  flutter_cache_manager: ^3.3.1
 
 dev_dependencies:
   flutter_test:

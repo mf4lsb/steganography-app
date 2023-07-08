@@ -27,7 +27,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
   File? watermarkImage;
 
   List<String> noises = [
-    'Choose Noise',
+    'Without Noise',
     'Classical Noise',
     'Quantum Noise',
   ];
@@ -39,7 +39,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
     'Quantum SS',
   ];
 
-  String? noiseController = 'Choose Noise';
+  String? noiseController = 'Without Noise';
   String? methodController = 'Choose Method';
 
   final TextEditingController keyController = TextEditingController();
@@ -48,7 +48,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
     if (citraImage != null &&
         watermarkImage != null &&
         keyController.text.isNotEmpty &&
-        noiseController != 'Choose Noise' &&
+        // noiseController != 'Choose Noise' &&
         methodController != 'Choose Method' &&
         AuthService.currentUser != null) {
       String citraExtension = '';
@@ -92,6 +92,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
         FirebaseDatabaseService.addData(
           'Embedding/HostEm/$timelapse',
           {
+            'attack': noise == 'without' ? 'no' : noise.toLowerCase(),
             'key': keyController.text,
             'metode': method.toLowerCase(),
             'nama_file': refCitra.replaceAll('HostEm/', ''),
@@ -104,6 +105,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
         FirebaseDatabaseService.addData(
           'Embedding/WatermarkEm/$timelapse',
           {
+            'attack': noise == 'without' ? 'no' : noise.toLowerCase(),
             'key': keyController.text,
             'metode': method.toLowerCase(),
             'nama_file': refWatermark.replaceAll('WatermarkEm/', ''),
@@ -126,8 +128,9 @@ class _EmbeddingViewState extends State<EmbeddingView> {
         citraImage = null;
         watermarkImage = null;
         keyController.clear();
-        noiseController = '';
-        methodController = '';
+        noiseController = 'Without Noise';
+        methodController = 'Choose Method';
+        setState(() {});
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(
@@ -338,7 +341,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
                         });
                       },
                       hint: const Text(
-                        'Choose Noise',
+                        'Without Noise',
                       ),
                       underline: const SizedBox(),
                       icon: const SizedBox(),
@@ -385,66 +388,66 @@ class _EmbeddingViewState extends State<EmbeddingView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  Center(
-                      child: Text('Stego-Image',
-                          style:
-                              AppTypography.regular12.copyWith(fontSize: 18))),
-                  const SizedBox(height: 10),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    width: double.infinity,
-                    height: 236,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                      child: Text('Stego-Image (After)',
-                          style:
-                              AppTypography.regular12.copyWith(fontSize: 18))),
-                  const SizedBox(height: 10),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    width: double.infinity,
-                    height: 236,
-                    color: Colors.white,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(
-                                color: CustomColors.primaryPurple,
-                              ),
-                            ),
-                            backgroundColor: Colors.transparent,
-                            elevation: 0),
-                        onPressed: () {},
-                        child: Text('Save',
-                            style: AppTypography.regular12.copyWith(
-                                fontSize: 14, color: const Color(0xff602B6F))),
-                      ),
-                      const SizedBox(width: 40),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: const BorderSide(
-                                color: CustomColors.primaryPurple,
-                              ),
-                            ),
-                            backgroundColor: Colors.transparent,
-                            elevation: 0),
-                        onPressed: () {},
-                        child: Text('Share',
-                            style: AppTypography.regular12.copyWith(
-                                fontSize: 14, color: const Color(0xff602B6F))),
-                      ),
-                    ],
-                  )
+                  // const SizedBox(height: 15),
+                  // Center(
+                  //     child: Text('Stego-Image',
+                  //         style:
+                  //             AppTypography.regular12.copyWith(fontSize: 18))),
+                  // const SizedBox(height: 10),
+                  // Container(
+                  //   margin: const EdgeInsets.only(bottom: 20),
+                  //   width: double.infinity,
+                  //   height: 236,
+                  //   color: Colors.white,
+                  // ),
+                  // const SizedBox(height: 10),
+                  // Center(
+                  //     child: Text('Stego-Image (After)',
+                  //         style:
+                  //             AppTypography.regular12.copyWith(fontSize: 18))),
+                  // const SizedBox(height: 10),
+                  // Container(
+                  //   margin: const EdgeInsets.only(bottom: 20),
+                  //   width: double.infinity,
+                  //   height: 236,
+                  //   color: Colors.white,
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     ElevatedButton(
+                  //       style: ElevatedButton.styleFrom(
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(10),
+                  //             side: const BorderSide(
+                  //               color: CustomColors.primaryPurple,
+                  //             ),
+                  //           ),
+                  //           backgroundColor: Colors.transparent,
+                  //           elevation: 0),
+                  //       onPressed: () {},
+                  //       child: Text('Save',
+                  //           style: AppTypography.regular12.copyWith(
+                  //               fontSize: 14, color: const Color(0xff602B6F))),
+                  //     ),
+                  //     const SizedBox(width: 40),
+                  //     ElevatedButton(
+                  //       style: ElevatedButton.styleFrom(
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(10),
+                  //             side: const BorderSide(
+                  //               color: CustomColors.primaryPurple,
+                  //             ),
+                  //           ),
+                  //           backgroundColor: Colors.transparent,
+                  //           elevation: 0),
+                  //       onPressed: () {},
+                  //       child: Text('Share',
+                  //           style: AppTypography.regular12.copyWith(
+                  //               fontSize: 14, color: const Color(0xff602B6F))),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),

@@ -208,61 +208,61 @@ class _ExtractionViewState extends State<ExtractionView> {
                             fontSize: 16, color: const Color(0xff602B6F))),
                   ),
                 ),
-                const SizedBox(height: 15),
-                Center(
-                    child: Text('Watermarking',
-                        style: AppTypography.regular12.copyWith(fontSize: 18))),
-                const SizedBox(height: 10),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  width: double.infinity,
-                  height: 236,
-                  color: Colors.white,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: const BorderSide(
-                              color: CustomColors.primaryPurple,
-                            ),
-                          ),
-                          backgroundColor: Colors.transparent,
-                          elevation: 0),
-                      onPressed: () {},
-                      child: Text(
-                        'Save',
-                        style: AppTypography.regular12.copyWith(
-                          fontSize: 14,
-                          color: CustomColors.primaryPurple,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 40),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: const BorderSide(
-                              color: CustomColors.primaryPurple,
-                            ),
-                          ),
-                          backgroundColor: Colors.transparent,
-                          elevation: 0),
-                      onPressed: () {},
-                      child: Text(
-                        'Share',
-                        style: AppTypography.regular12.copyWith(
-                          fontSize: 14,
-                          color: CustomColors.primaryPurple,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
+                // const SizedBox(height: 15),
+                // Center(
+                //     child: Text('Watermarking',
+                //         style: AppTypography.regular12.copyWith(fontSize: 18))),
+                // const SizedBox(height: 10),
+                // Container(
+                //   margin: const EdgeInsets.only(bottom: 20),
+                //   width: double.infinity,
+                //   height: 236,
+                //   color: Colors.white,
+                // ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     ElevatedButton(
+                //       style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //             side: const BorderSide(
+                //               color: CustomColors.primaryPurple,
+                //             ),
+                //           ),
+                //           backgroundColor: Colors.transparent,
+                //           elevation: 0),
+                //       onPressed: () {},
+                //       child: Text(
+                //         'Save',
+                //         style: AppTypography.regular12.copyWith(
+                //           fontSize: 14,
+                //           color: CustomColors.primaryPurple,
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 40),
+                //     ElevatedButton(
+                //       style: ElevatedButton.styleFrom(
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(10),
+                //             side: const BorderSide(
+                //               color: CustomColors.primaryPurple,
+                //             ),
+                //           ),
+                //           backgroundColor: Colors.transparent,
+                //           elevation: 0),
+                //       onPressed: () {},
+                //       child: Text(
+                //         'Share',
+                //         style: AppTypography.regular12.copyWith(
+                //           fontSize: 14,
+                //           color: CustomColors.primaryPurple,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // )
               ],
             ),
           ),
