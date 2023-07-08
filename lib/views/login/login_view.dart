@@ -111,6 +111,10 @@ class _LoginViewState extends State<LoginView> {
     }
   }
 
+  Future<void> loginGoogleAction() async {
+    final gLogin = await AuthService.signInWithGoogle();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,6 +194,18 @@ class _LoginViewState extends State<LoginView> {
                     _buildHorizontalRule(),
                     const SizedBox(height: 12),
                     _buildSignUpQuestion(),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: loginGoogleAction,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black87),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text('Login Google'),
+                      ),
+                    ),
                     const Spacer(),
                   ],
                 ),
