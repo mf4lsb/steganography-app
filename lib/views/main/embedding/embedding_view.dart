@@ -48,9 +48,26 @@ class _EmbeddingViewState extends State<EmbeddingView> {
     if (citraImage != null &&
         watermarkImage != null &&
         keyController.text.isNotEmpty &&
-        noiseController == 'Choose Noise' &&
-        methodController == 'Choose Method' &&
+        noiseController != 'Choose Noise' &&
+        methodController != 'Choose Method' &&
         AuthService.currentUser != null) {
+      String citraExtension = '';
+      if (citraImage!.path.endsWith("png")) {
+        citraExtension = 'png';
+      } else if (citraImage!.path.endsWith("jpg")) {
+        citraExtension = 'jpg';
+      } else if (citraImage!.path.endsWith("jpeg")) {
+        citraExtension = 'jpeg';
+      }
+
+      String watermarkExtension = '';
+      if (watermarkImage!.path.endsWith("png")) {
+        watermarkExtension = 'png';
+      } else if (watermarkImage!.path.endsWith("jpg")) {
+        watermarkExtension = 'jpg';
+      } else if (watermarkImage!.path.endsWith("jpeg")) {
+        watermarkExtension = 'jpeg';
+      }
       // userid_metode_attack_H_timelapse
       final String method =
           methodController!.replaceAll('Quantum ', '').toLowerCase();
@@ -59,10 +76,14 @@ class _EmbeddingViewState extends State<EmbeddingView> {
       final String timelapse =
           (DateTime.now().millisecondsSinceEpoch / 1000).floor().toString();
 
+      // final String refCitra =
+      //     'HostEm/${AuthService.currentUser!.uid}_${method}_${noise}_${keyController.text}_H_$timelapse';
+      // final String refWatermark =
+      //     'WatermarkEm/${AuthService.currentUser!.uid}_${method}_${noise}_${keyController.text}_W_$timelapse';
       final String refCitra =
-          'HostEm/${AuthService.currentUser!.uid}_${method}_${noise}_${keyController.text}_H_$timelapse';
+          'HostEm/${AuthService.currentUser!.uid}_${method.toLowerCase()}_H_$timelapse.$citraExtension';
       final String refWatermark =
-          'WatermarkEm/${AuthService.currentUser!.uid}_${method}_${noise}_${keyController.text}_W_$timelapse';
+          'WatermarkEm/${AuthService.currentUser!.uid}_${method.toLowerCase()}_W_$timelapse.$watermarkExtension';
 
       try {
         FirebaseStorageService.uploadImage(citraImage!, refCitra);
@@ -70,11 +91,27 @@ class _EmbeddingViewState extends State<EmbeddingView> {
 
         FirebaseDatabaseService.addData(
           'Embedding/HostEm/$timelapse',
-          {'nama_file': refCitra, 'path_file': 'HostEm/'},
+          {
+            'key': keyController.text,
+            'metode': method.toLowerCase(),
+            'nama_file': refCitra.replaceAll('HostEm/', ''),
+            'path_file': 'HostEm/',
+            'status': 0,
+            'timestamp': timelapse,
+            'userid': AuthService.currentUser!.uid,
+          },
         );
         FirebaseDatabaseService.addData(
           'Embedding/WatermarkEm/$timelapse',
-          {'nama_file': refWatermark, 'path_file': 'WatermarkEm/'},
+          {
+            'key': keyController.text,
+            'metode': method.toLowerCase(),
+            'nama_file': refWatermark.replaceAll('WatermarkEm/', ''),
+            'path_file': 'WatermarkEm/',
+            'status': 0,
+            'timestamp': timelapse,
+            'user_id': AuthService.currentUser!.uid,
+          },
         );
 
         // FirebaseDatabaseService.addData(

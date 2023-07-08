@@ -13,4 +13,10 @@ class FirebaseStorageService {
       debugPrint(e.toString());
     }
   }
+
+  static Future<String> downloadUrl(String ref) async {
+    String downloadUrl = await _firebaseStorage.ref(ref).getDownloadURL();
+
+    return downloadUrl;
+  }
 }

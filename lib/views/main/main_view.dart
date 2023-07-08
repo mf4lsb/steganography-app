@@ -5,6 +5,7 @@ import 'package:steganography_app/views/main/attack/attack_view.dart';
 import 'package:steganography_app/views/main/embedding/embedding_view.dart';
 import 'package:steganography_app/views/main/extraction/extraction_view.dart';
 import 'package:steganography_app/views/main/learn/learn_view.dart';
+import 'package:steganography_app/views/main/your_project/your_project.dart';
 import 'package:steganography_app/views/profil_screen/profil_screen.dart';
 
 import '../../constants/custom_colors.dart';
@@ -34,7 +35,7 @@ class _MainViewState extends State<MainView> {
               child: Stack(
                 children: [
                   Center(
-                    child: Container(
+                    child: SizedBox(
                       height: 100,
                       width: 140,
                       child: 
@@ -46,7 +47,7 @@ class _MainViewState extends State<MainView> {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilScreen()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilScreen()));
                       },
                       icon: const Icon(Icons.account_circle),
                       color: CustomColors.primaryPurple,
@@ -60,25 +61,24 @@ class _MainViewState extends State<MainView> {
               width: MediaQuery.of(context).size.width,
               height: 50,
               color: CustomColors.primaryPurple,
-              child: Row(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
-                  Expanded(
-                    child: _buildItemTabBar(                    //Menampilkan Menu pada Tabbar
-                      name: 'Learn',
-                      pageNumber: 0,
-                    ),
+                  _buildItemTabBar(                    //Menampilkan Menu pada Tabbar
+                    name: 'Learn',
+                    pageNumber: 0,
                   ),
-                  Expanded(
-                    child: _buildItemTabBar(
-                      name: 'Embedding',
-                      pageNumber: 1,
-                    ),
+                  _buildItemTabBar(
+                    name: 'Embedding',
+                    pageNumber: 1,
                   ),
-                  Expanded(
-                    child: _buildItemTabBar(
-                      name: 'Extraction',
-                      pageNumber: 2,
-                    ),
+                  _buildItemTabBar(
+                    name: 'Extraction',
+                    pageNumber: 2,
+                  ),
+                  _buildItemTabBar(
+                    name: 'Your Projects',
+                    pageNumber: 3,
                   ),
                 ],
               ),
@@ -95,6 +95,7 @@ class _MainViewState extends State<MainView> {
                   LearnView(),
                   EmbeddingView(),
                   ExtractionView(),
+                  YourProject()
                 ],
               ),
             )
@@ -116,6 +117,7 @@ class _MainViewState extends State<MainView> {
         });
       },
       child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12),
         alignment: Alignment.center,
         height: double.infinity,
         decoration: currentPage == pageNumber
