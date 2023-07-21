@@ -37,7 +37,7 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
     final instance = FirebaseDatabase.instance;
 
     if (event.exists) {
-      doneList.clear();
+      // doneList.clear();
       Map result = event.value as Map;
       result.forEach((key, value) async {
         // '0U2cAeR4lJNK8I7Set3JE67RYD72'
@@ -116,7 +116,7 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
       final path = '${tempDir.path}/$ref';
       await Dio().download(url, path);
 
-      await GallerySaver.saveImage(path, toDcim: true);
+      await GallerySaver.saveImage(path, albumName: 'SteganoApp');
 
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
@@ -139,7 +139,7 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
     final instance = FirebaseDatabase.instance;
 
     if (event.exists) {
-      waitingList.clear();
+      // waitingList.clear();
       Map result = event.value as Map;
       result.forEach((key, value) async {
         // '0U2cAeR4lJNK8I7Set3JE67RYD72'
@@ -186,13 +186,19 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
     //     ref.orderByChild("userid").equalTo("0U2cAeR4lJNK8I7Set3JE67RYD72");
     // final Query queryWaiting = ref.orderByChild("status").equalTo(0);
     // final Query queryDone = ref.orderByChild("status").equalTo(2);
-    final Query queryWaiting = ref.orderByChild("status").startAt(0).endAt(1);
+    final Query queryWaiting = ref.orderByChild("status").equalTo('0');
+    final Query queryWaiting1 = ref.orderByChild("status").equalTo(1);
     final Query queryDone = ref.orderByChild("status").startAt(2).endAt(5);
 
     DataSnapshot eventWaiting = await queryWaiting.get();
+    DataSnapshot eventWaiting1 = await queryWaiting1.get();
     DataSnapshot eventDone = await queryDone.get();
 
+    waitingList.clear();
+    doneList.clear();
+
     await getWaiting(eventWaiting);
+    await getWaiting(eventWaiting1);
     await getDone(eventDone);
 
     // Query query = ref.orderByChild("age").limitToFirst(10);
@@ -360,20 +366,40 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                         ),
                                         Text(
                                             '${dataListViewBuilder['embed_key']}'),
-                                        const SizedBox(height: 8),
-                                        const Text(
-                                          'BER',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text('${dataListViewBuilder['ber']}'),
-                                        const SizedBox(height: 8),
-                                        const Text(
-                                          'PSNR',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text('${dataListViewBuilder['psnr']}'),
+                                        dataListViewBuilder['status'] == '0' ||
+                                                dataListViewBuilder['status'] ==
+                                                    1
+                                            ? const SizedBox()
+                                            : Column(
+                                                children: [
+                                                  const SizedBox(height: 8),
+                                                  const Text(
+                                                    'BER',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                      '${dataListViewBuilder['ber']}'),
+                                                ],
+                                              ),
+                                        dataListViewBuilder['status'] == '0' ||
+                                                dataListViewBuilder['status'] ==
+                                                    1
+                                            ? const SizedBox()
+                                            : Column(
+                                                children: [
+                                                  const SizedBox(height: 8),
+                                                  const Text(
+                                                    'PSNR',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                      '${dataListViewBuilder['psnr']}'),
+                                                ],
+                                              ),
                                         // SizedBox(height: 8),
                                         // Text(
                                         //   'Noise',
@@ -391,7 +417,13 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                             ? 'WAITING ADMIN'
                                             : 'DONE'),
                                         const SizedBox(height: 12),
-                                        _buildImageAll(dataListViewBuilder),
+                                        dataListViewBuilder['status'] == '0' ||
+                                                dataListViewBuilder['status'] ==
+                                                    1
+                                            ? _buildImageWaiting(
+                                                dataListViewBuilder)
+                                            : _buildImageAll(
+                                                dataListViewBuilder),
                                         const SizedBox(height: 16),
                                         _buildAndShareAttackStego(
                                             dataListViewBuilder),
@@ -528,6 +560,96 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                       ),
                     ],
                   ))
+      ],
+    );
+  }
+
+  Row _buildImageWaiting(Map<String, dynamic> dataListViewBuilder) {
+    return Row(
+      children: [
+        dataListViewBuilder['path_file_citra'] == null
+            ? const SizedBox()
+            : Expanded(
+                child: Column(
+                children: [
+                  const Text(
+                    'Citra Image',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  FutureBuilder(
+                    future: FirebaseStorageService.downloadUrl(
+                        '${dataListViewBuilder['path_file_citra']}${dataListViewBuilder['nama_file_citra']}'),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData) {
+                        return Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black)),
+                          child: Image.network(
+                            snapshot.data!,
+                            fit: BoxFit.fill,
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              )),
+        const SizedBox(width: 8),
+        dataListViewBuilder['path_file_watermark'] == null
+            ? const SizedBox()
+            : Expanded(
+                child: Column(
+                  children: [
+                    const Text(
+                      'Watermark Image',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    FutureBuilder(
+                      future: FirebaseStorageService.downloadUrl(
+                          '${dataListViewBuilder['path_file_watermark']}${dataListViewBuilder['nama_file_watermark']}'),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done &&
+                            snapshot.hasData) {
+                          return Container(
+                            width: double.infinity,
+                            height: 200,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)),
+                            child: Image.network(
+                              snapshot.data!,
+                              fit: BoxFit.fill,
+                            ),
+                          );
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        return Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
       ],
     );
   }
