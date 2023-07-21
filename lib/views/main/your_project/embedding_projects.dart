@@ -55,16 +55,34 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                 (watermarkEvent.snapshot.value as Map)['path_file'];
           }
 
+          // STEGO
           final stegoEvent =
               await instance.ref('Embedding/StegoEm/$key').once();
 
           String stegoNameFile = '';
           String stegoPathFile = '';
+          String psnr = '';
 
           if (stegoEvent.snapshot.exists) {
             stegoNameFile = (stegoEvent.snapshot.value as Map)['nama_file'];
             stegoPathFile = (stegoEvent.snapshot.value as Map)['path_file'];
+            psnr = (stegoEvent.snapshot.value as Map)['psnr'];
           }
+
+          // ATTACK
+          final attackEvent =
+              await instance.ref('Embedding/Attack/$key').once();
+
+          String attackNameFile = '';
+          String attackPathFile = '';
+          String ber = '';
+
+          if (attackEvent.snapshot.exists) {
+            attackNameFile = (attackEvent.snapshot.value as Map)['nama_file'];
+            attackPathFile = (attackEvent.snapshot.value as Map)['path_file'];
+            ber = (attackEvent.snapshot.value as Map)['ber'].toString();
+          }
+
           Map<String, dynamic> each = {
             'key': key,
             'metode': value['metode'],
@@ -74,6 +92,10 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
             'path_file_watermark': watermarkPathFile,
             'nama_file_stego': stegoNameFile,
             'path_file_stego': stegoPathFile,
+            'nama_file_attack': attackNameFile,
+            'path_file_attack': attackPathFile,
+            'ber': ber,
+            'psnr': psnr,
             'userid': value['userid'],
             'embed_key': value['key'],
             'status': value['status'],
@@ -338,6 +360,20 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                         ),
                                         Text(
                                             '${dataListViewBuilder['embed_key']}'),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          'BER',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text('${dataListViewBuilder['ber']}'),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          'PSNR',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text('${dataListViewBuilder['psnr']}'),
                                         // SizedBox(height: 8),
                                         // Text(
                                         //   'Noise',
@@ -357,12 +393,14 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                         const SizedBox(height: 12),
                                         _buildImageAll(dataListViewBuilder),
                                         const SizedBox(height: 16),
-                                        dataListViewBuilder[
-                                                    'path_file_stego'] ==
-                                                null
-                                            ? const SizedBox()
-                                            : _buildSaveAndShare(
-                                                dataListViewBuilder)
+                                        _buildAndShareAttackStego(
+                                            dataListViewBuilder),
+                                        // dataListViewBuilder[
+                                        //             'path_file_stego'] ==
+                                        //         null
+                                        //     ? const SizedBox()
+                                        //     : _buildSaveAndShare(
+                                        //         dataListViewBuilder)
                                       ],
                                     ),
                                   );
@@ -377,76 +415,233 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
     );
   }
 
-  Row _buildImageAll(Map<String, dynamic> dataListViewBuilder) {
+  Row _buildAndShareAttackStego(Map<String, dynamic> dataListViewBuilder) {
     return Row(
       children: [
         Expanded(
-            child: Column(
-          children: [
-            const Text(
-              'Citra Host',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            FutureBuilder(
-              future: FirebaseStorageService.downloadUrl(
-                  '${dataListViewBuilder['path_file_citra']}${dataListViewBuilder['nama_file_citra']}'),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
-                  return Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.fill,
-                    ),
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    !snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                }
-                return const SizedBox();
-              },
-            ),
-          ],
-        )),
-        const SizedBox(width: 8),
+            child: dataListViewBuilder['path_file_attack'] == null
+                ? const SizedBox()
+                : Column(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(
+                                color: CustomColors.primaryPurple,
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            elevation: 0),
+                        onPressed: () => downloadImage(
+                            '${dataListViewBuilder['path_file_attack']}${dataListViewBuilder['nama_file_attack']}'),
+                        child: Text(
+                          'Save',
+                          style: AppTypography.regular12.copyWith(
+                            fontSize: 14,
+                            color: CustomColors.primaryPurple,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(
+                                color: CustomColors.primaryPurple,
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            elevation: 0),
+                        onPressed: () async {
+                          final String url =
+                              await FirebaseStorageService.downloadUrl(
+                                  '${dataListViewBuilder['path_file_attack']}${dataListViewBuilder['nama_file_attack']}');
+                          var file =
+                              await DefaultCacheManager().getSingleFile(url);
+                          XFile result = XFile(file.path);
+                          await Share.shareXFiles([result],
+                              text: 'Attack Image');
+                        },
+                        child: Text(
+                          'Share',
+                          style: AppTypography.regular12.copyWith(
+                            fontSize: 14,
+                            color: CustomColors.primaryPurple,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
         Expanded(
-            child: Column(
-          children: [
-            const Text(
-              'Watermark',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            FutureBuilder(
-              future: FirebaseStorageService.downloadUrl(
-                  '${dataListViewBuilder['path_file_watermark']}${dataListViewBuilder['nama_file_watermark']}'),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
-                  return Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration:
-                        BoxDecoration(border: Border.all(color: Colors.black)),
-                    child: Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.fill,
-                    ),
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    !snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                }
-                return const SizedBox();
-              },
-            ),
-          ],
-        )),
+            child: dataListViewBuilder['path_file_stego'] == null
+                ? const SizedBox()
+                : Column(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(
+                                color: CustomColors.primaryPurple,
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            elevation: 0),
+                        onPressed: () => downloadImage(
+                            '${dataListViewBuilder['path_file_stego']}${dataListViewBuilder['nama_file_stego']}'),
+                        child: Text(
+                          'Save',
+                          style: AppTypography.regular12.copyWith(
+                            fontSize: 14,
+                            color: CustomColors.primaryPurple,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(
+                                color: CustomColors.primaryPurple,
+                              ),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            elevation: 0),
+                        onPressed: () async {
+                          final String url =
+                              await FirebaseStorageService.downloadUrl(
+                                  '${dataListViewBuilder['path_file_stego']}${dataListViewBuilder['nama_file_stego']}');
+                          var file =
+                              await DefaultCacheManager().getSingleFile(url);
+                          XFile result = XFile(file.path);
+                          await Share.shareXFiles([result],
+                              text: 'Stego Image');
+                        },
+                        child: Text(
+                          'Share',
+                          style: AppTypography.regular12.copyWith(
+                            fontSize: 14,
+                            color: CustomColors.primaryPurple,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ))
+      ],
+    );
+  }
+
+  Row _buildImageAll(Map<String, dynamic> dataListViewBuilder) {
+    return Row(
+      children: [
+        // Expanded(
+        //     child: Column(
+        //   children: [
+        //     const Text(
+        //       'Citra Host',
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //     FutureBuilder(
+        //       future: FirebaseStorageService.downloadUrl(
+        //           '${dataListViewBuilder['path_file_citra']}${dataListViewBuilder['nama_file_citra']}'),
+        //       builder: (context, snapshot) {
+        //         if (snapshot.connectionState == ConnectionState.done &&
+        //             snapshot.hasData) {
+        //           return Container(
+        //             width: double.infinity,
+        //             height: 200,
+        //             decoration:
+        //                 BoxDecoration(border: Border.all(color: Colors.black)),
+        //             child: Image.network(
+        //               snapshot.data!,
+        //               fit: BoxFit.fill,
+        //             ),
+        //           );
+        //         }
+        //         if (snapshot.connectionState == ConnectionState.waiting ||
+        //             !snapshot.hasData) {
+        //           return const CircularProgressIndicator();
+        //         }
+        //         return const SizedBox();
+        //       },
+        //     ),
+        //   ],
+        // )),
+        // const SizedBox(width: 8),
+        // Expanded(
+        //     child: Column(
+        //   children: [
+        //     const Text(
+        //       'Watermark',
+        //       style: TextStyle(fontWeight: FontWeight.bold),
+        //     ),
+        //     FutureBuilder(
+        //       future: FirebaseStorageService.downloadUrl(
+        //           '${dataListViewBuilder['path_file_watermark']}${dataListViewBuilder['nama_file_watermark']}'),
+        //       builder: (context, snapshot) {
+        //         if (snapshot.connectionState == ConnectionState.done &&
+        //             snapshot.hasData) {
+        //           return Container(
+        //             width: double.infinity,
+        //             height: 200,
+        //             decoration:
+        //                 BoxDecoration(border: Border.all(color: Colors.black)),
+        //             child: Image.network(
+        //               snapshot.data!,
+        //               fit: BoxFit.fill,
+        //             ),
+        //           );
+        //         }
+        //         if (snapshot.connectionState == ConnectionState.waiting ||
+        //             !snapshot.hasData) {
+        //           return const CircularProgressIndicator();
+        //         }
+        //         return const SizedBox();
+        //       },
+        //     ),
+        //   ],
+        // )),
+        dataListViewBuilder['path_file_attack'] == null
+            ? const SizedBox()
+            : Expanded(
+                child: Column(
+                children: [
+                  const Text(
+                    'Attack Image',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  FutureBuilder(
+                    future: FirebaseStorageService.downloadUrl(
+                        '${dataListViewBuilder['path_file_attack']}${dataListViewBuilder['nama_file_attack']}'),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData) {
+                        return Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black)),
+                          child: Image.network(
+                            snapshot.data!,
+                            fit: BoxFit.fill,
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      return Container(
+                        width: double.infinity,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              )),
         const SizedBox(width: 8),
         dataListViewBuilder['path_file_stego'] == null
             ? const SizedBox()
@@ -454,7 +649,7 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                 child: Column(
                 children: [
                   const Text(
-                    'StegoImage',
+                    'Stego Image',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   FutureBuilder(

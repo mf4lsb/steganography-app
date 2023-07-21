@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "379367404299-mialtmkiqvvqe2lqslo1afvvfvr5oj72.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.steganography_app",
+            "certificate_hash": "17df23f958e05498726eb5583c9a4dcbf893c3a9"
+          }
+        },
+        {
           "client_id": "379367404299-kmi4qr3e14mq55kfkk6o8d1inhapfms1.apps.googleusercontent.com",
           "client_type": 3
         }

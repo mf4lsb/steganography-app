@@ -28,7 +28,6 @@ class _EmbeddingViewState extends State<EmbeddingView> {
 
   List<String> noises = [
     'Without Noise',
-    'Classical Noise',
     'Quantum Noise',
   ];
 
@@ -92,12 +91,12 @@ class _EmbeddingViewState extends State<EmbeddingView> {
         FirebaseDatabaseService.addData(
           'Embedding/HostEm/$timelapse',
           {
-            'attack': noise == 'without' ? 'no' : noise.toLowerCase(),
+            'attack': noise == 'without' ? '0' : '0.1',
             'key': keyController.text,
             'metode': method.toLowerCase(),
             'nama_file': refCitra.replaceAll('HostEm/', ''),
             'path_file': 'HostEm/',
-            'status': 0,
+            'status': '0',
             'timestamp': timelapse,
             'userid': AuthService.currentUser!.uid,
           },
@@ -105,14 +104,14 @@ class _EmbeddingViewState extends State<EmbeddingView> {
         FirebaseDatabaseService.addData(
           'Embedding/WatermarkEm/$timelapse',
           {
-            'attack': noise == 'without' ? 'no' : noise.toLowerCase(),
+            'attack': noise == 'without' ? '0' : '0.1',
             'key': keyController.text,
             'metode': method.toLowerCase(),
             'nama_file': refWatermark.replaceAll('WatermarkEm/', ''),
             'path_file': 'WatermarkEm/',
-            'status': 0,
+            'status': '0',
             'timestamp': timelapse,
-            'user_id': AuthService.currentUser!.uid,
+            'userid': AuthService.currentUser!.uid,
           },
         );
 
@@ -255,7 +254,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Watermarking',
+                    'Hidden Image',
                     style: AppTypography.title,
                   ),
                   CustomTextFieldV2(

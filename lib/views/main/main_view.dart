@@ -77,7 +77,7 @@ class _MainViewState extends State<MainView> {
                     pageNumber: 2,
                   ),
                   _buildItemTabBar(
-                    name: 'Your Projects',
+                    name: 'Results',
                     pageNumber: 3,
                   ),
                 ],
