@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:steganography_app/views/main/your_project/embedding_projects.dart';
+import 'package:steganography_app/views/main/your_project/extraction_projects.dart';
 
 import '../../../constants/custom_colors.dart';
 import '../../../constants/typo.dart';
@@ -36,7 +37,15 @@ class _YourProjectState extends State<YourProject> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildYourProjectItem('Extraction', () {}),
+                _buildYourProjectItem(
+                  'Extraction',
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ExtractionProjects(),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

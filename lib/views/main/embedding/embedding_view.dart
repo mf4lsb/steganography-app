@@ -34,7 +34,7 @@ class _EmbeddingViewState extends State<EmbeddingView> {
   List<String> methods = [
     'Choose Method',
     'Quantum DCT',
-    'Quantum DWT',
+    'Quantum Wavelet',
     'Quantum SS',
   ];
 

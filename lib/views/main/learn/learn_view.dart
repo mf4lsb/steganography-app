@@ -24,7 +24,7 @@ class LearnView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LearnContent(
+                  builder: (context) => const LearnContent(
                     content: Common.steganographyContent,
                     image: 'assets/images/Stego.png',
                     title: 'Steganography',
@@ -41,7 +41,7 @@ class LearnView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LearnContent(
+                  builder: (context) => const LearnContent(
                     content: Common.Quantum,
                     image: 'assets/images/Quantum.png',
                     title: 'Quantum Technology',
@@ -58,7 +58,7 @@ class LearnView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LearnContent(
+                  builder: (context) => const LearnContent(
                     content: Common.Quantum,
                     image: 'assets/images/Stego.png',
                     title: 'Quantum Steganography',
@@ -101,10 +101,10 @@ class LearnView extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                child: Image.asset(icon, fit: BoxFit.contain,),
+              SizedBox(
                 height: double.infinity,
                 width: 70,
+                child: Image.asset(icon, fit: BoxFit.contain,),
                 
               ),
               const SizedBox(width: 8),

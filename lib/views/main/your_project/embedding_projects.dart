@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
@@ -83,6 +84,17 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
             ber = (attackEvent.snapshot.value as Map)['ber'].toString();
           }
 
+          // MAT FILE
+          final matEvent = await instance.ref('Embedding/FileMat/$key').once();
+
+          String matNameFile = '';
+          String matPathFile = '';
+
+          if (matEvent.snapshot.exists) {
+            matNameFile = (matEvent.snapshot.value as Map)['nama_file'];
+            matPathFile = (matEvent.snapshot.value as Map)['path_file'];
+          }
+
           Map<String, dynamic> each = {
             'key': key,
             'metode': value['metode'],
@@ -94,6 +106,8 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
             'path_file_stego': stegoPathFile,
             'nama_file_attack': attackNameFile,
             'path_file_attack': attackPathFile,
+            'nama_file_mat': matNameFile,
+            'path_file_mat': matPathFile,
             'ber': ber,
             'psnr': psnr,
             'userid': value['userid'],
@@ -105,6 +119,26 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
         }
         setState(() {});
       });
+    }
+  }
+
+  Future copyDownloadUrl(String ref) async {
+    try {
+      String urlDownloaded = await FirebaseStorageService.downloadUrl(ref);
+      await Clipboard.setData(ClipboardData(text: urlDownloaded));
+
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            'URL Download .mat berhasil di copy!',
+            style: AppTypography.regular12.copyWith(color: Colors.black),
+          ),
+        ),
+      );
+    } catch (e) {
+      print('failed saveImage: $e');
     }
   }
 
@@ -371,6 +405,8 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                                     1
                                             ? const SizedBox()
                                             : Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   const SizedBox(height: 8),
                                                   const Text(
@@ -388,6 +424,8 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                                     1
                                             ? const SizedBox()
                                             : Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   const SizedBox(height: 8),
                                                   const Text(
@@ -427,6 +465,13 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
                                         const SizedBox(height: 16),
                                         _buildAndShareAttackStego(
                                             dataListViewBuilder),
+                                        const SizedBox(height: 20),
+                                        dataListViewBuilder['status'] == '0' ||
+                                                dataListViewBuilder['status'] ==
+                                                    1
+                                            ? const SizedBox()
+                                            : _buildDownloadFileMat(
+                                                dataListViewBuilder),
                                         // dataListViewBuilder[
                                         //             'path_file_stego'] ==
                                         //         null
@@ -443,6 +488,45 @@ class _EmbeddingProjectsState extends State<EmbeddingProjects> {
             ),
           );
         }),
+      ),
+    );
+  }
+
+  Center _buildDownloadFileMat(Map<String, dynamic> dataListViewBuilder) {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(
+                color: CustomColors.primaryPurple,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0),
+        onPressed: () async {
+          bool result = await FirebaseStorageService.downloadAndSaveMatFile(
+              '${dataListViewBuilder['path_file_mat']}${dataListViewBuilder['nama_file_mat']}');
+          if (result) {
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.green,
+                content: Text(
+                  'Download successfull! File location: Download/${dataListViewBuilder['nama_file_mat']}',
+                  style: AppTypography.regular12.copyWith(color: Colors.white),
+                ),
+              ),
+            );
+          }
+        },
+        child: Text(
+          'Download .mat File',
+          style: AppTypography.regular12.copyWith(
+            fontSize: 14,
+            color: CustomColors.primaryPurple,
+          ),
+        ),
       ),
     );
   }
